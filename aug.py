@@ -10,8 +10,10 @@ def get_transforms(size: int, scope: str = 'geometric', crop='random'):
                                     albu.OpticalDistortion(),
                                     albu.OneOf([
                                         albu.CLAHE(clip_limit=2),
-                                        albu.IAASharpen(),
-                                        albu.IAAEmboss(),
+                                        #albu.IAASharpen(),
+                                        albu.Sharpen(),
+                                        #albu.IAAEmboss(),
+                                        albu.Emboss(),
                                         albu.RandomBrightnessContrast(),
                                         albu.RandomGamma()
                                     ], p=0.5),
@@ -26,12 +28,16 @@ def get_transforms(size: int, scope: str = 'geometric', crop='random'):
                                      albu.VerticalFlip(),
                                      albu.RandomRotate90(),
                                      ]),
-            'None': None
+            #'None': None
+             'None': albu.NoOp()
             }
 
     aug_fn = augs[scope]
-    crop_fn = {'random': albu.RandomCrop(size, size, always_apply=True),
-               'center': albu.CenterCrop(size, size, always_apply=True)}[crop]
+    crop_fn = {
+        #'random': albu.RandomCrop(size, size, always_apply=True),
+        'random': albu.RandomCrop(size, size),
+        #'center': albu.CenterCrop(size, size, always_apply=True)}[crop]
+        'center': albu.CenterCrop(size, size)}[crop]
 
     pipeline = albu.Compose([aug_fn, crop_fn], additional_targets={'target': 'image'})
 
