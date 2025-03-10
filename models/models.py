@@ -1,6 +1,7 @@
 import numpy as np
 import torch.nn as nn
-from skimage.measure import compare_ssim as SSIM
+#from skimage.measure import compare_ssim as SSIM
+from skimage.metrics import structural_similarity as SSIM
 
 from util.metrics import PSNR
 
@@ -26,7 +27,8 @@ class DeblurModel(nn.Module):
         fake = self.tensor2im(output.data)
         real = self.tensor2im(target.data)
         psnr = PSNR(fake, real)
-        ssim = SSIM(fake.astype('uint8'), real.astype('uint8'), multichannel=True)
+        #ssim = SSIM(fake.astype('uint8'), real.astype('uint8'), multichannel=True)
+        ssim = SSIM(fake.astype('uint8'), real.astype('uint8'), multichannel=True, channel_axis=2)
         vis_img = np.hstack((inp, fake, real))
         return psnr, ssim, vis_img
 
